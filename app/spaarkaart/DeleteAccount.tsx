@@ -1,21 +1,23 @@
 "use client";
 
-import { Button } from "@/components/ds/buttons/Button";
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { useT } from "@/components/LocaleProvider";
 import { deleteAccount } from "./actions";
 
 export function DeleteAccount() {
+  const t = useT();
   return (
-    <form
+    <ConfirmButton
       action={deleteAccount}
-      onSubmit={(e) => {
-        if (!confirm("Weet je zeker dat je je account en al je punten wilt verwijderen?")) {
-          e.preventDefault();
-        }
-      }}
+      variant="ghost"
+      confirmVariant="primary"
+      size="sm"
+      title={t("card.deleteAccount")}
+      message={t("card.deleteConfirm")}
+      confirmLabel={t("card.deleteAccount")}
+      cancelLabel={t("common.cancel")}
     >
-      <Button type="submit" variant="ghost" size="sm">
-        Account verwijderen
-      </Button>
-    </form>
+      {t("card.deleteAccount")}
+    </ConfirmButton>
   );
 }

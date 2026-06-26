@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="admin">
-      <AdminNav />
+      <AdminNav isOwner={!!profile.is_owner} />
       <div className="admin-inner">
         <header className="appbar">
           <span className="appbar-brand">

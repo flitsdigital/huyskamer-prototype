@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation";
+import { getUserProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { dateTime, euro } from "@/lib/format";
+import { PrintButton } from "@/components/PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +29,11 @@ function who(p: { display_name: string | null; email: string | null } | null) {
 }
 
 export default async function LogboekPage() {
+  const profile = await getUserProfile();
+  if (!profile) redirect("/login");
+  if (profile.role !== "admin") redirect("/spaarkaart");
+  if (!profile.is_owner) redirect("/admin");
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("point_transactions")
@@ -42,9 +50,12 @@ export default async function LogboekPage() {
 
   return (
     <div className="stack">
-      <div>
-        <span className="eyebrow">Beheer</span>
-        <h1 className="title">Logboek</h1>
+      <div className="row-between wrap">
+        <div>
+          <span className="eyebrow">Beheer</span>
+          <h1 className="title">Logboek</h1>
+        </div>
+        <PrintButton label="Printen" />
       </div>
 
       <div className="card" style={{ overflowX: "auto" }}>

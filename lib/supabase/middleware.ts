@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Refreshes the Supabase auth session on every request and keeps cookies in sync.
+const PROTECTED = ["/admin", "/spaarkaart", "/profiel"];
+
+// Refreshes the Supabase auth session and redirects unauthenticated users away from
+// protected routes to /login?next=… (so a scanned deep-link returns there after sign-in).
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -16,16 +19,25 @@ export async function updateSession(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
     }
   );
 
   // IMPORTANT: do not run code between createServerClient and getUser().
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const path = request.nextUrl.pathname;
+  if (!user && PROTECTED.some((p) => path.startsWith(p))) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.search = "";
+    url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
+  }
 
   return response;
 }

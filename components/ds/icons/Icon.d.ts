@@ -2,7 +2,7 @@ import * as React from "react";
 
 export type IconName =
   | "menu" | "close" | "arrow-right" | "chevron-down" | "chevron-right"
-  | "users" | "gift" | "scan" | "list" | "settings" | "log-out"
+  | "users" | "gift" | "scan" | "list" | "settings" | "log-out" | "search"
   | "phone" | "mail" | "map-pin" | "clock"
   | "info" | "check" | "check-circle" | "star"
   | "instagram" | "facebook" | "whatsapp";

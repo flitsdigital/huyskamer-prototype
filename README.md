@@ -74,3 +74,22 @@ Volgende medewerkers idem.
 - **In-browser scanner** gebruikt `BarcodeDetector` (Chrome/Android); op iOS gebruikt men de camera-app of het handmatige codeveld.
 - **Privacyverklaring** is een placeholder — vervang door definitieve juridische tekst.
 # huyskamer-prototype
+
+---
+
+## v2 — branch `feature/grote-verbeteringen`
+
+Grote uitbreiding: spaartiers, welkomst-/aanbreng-/verjaardagsbonus, puntenvervaldatum, referral,
+klantprofiel + statistieken, NL/EN/DE, medewerker/eigenaar-rollen, walk-in-klanten, realtime,
+toasts, skeletons, onboarding, foutpagina's, owner-dashboard, tests/CI/Sentry en toegankelijkheid.
+
+**Zie [`IMPROVEMENTS.md`](IMPROVEMENTS.md) voor de volledige statuslijst en de handmatige stappen.**
+
+Kort:
+1. Draai **`supabase/migrations/0002_loyalty_plus.sql`** in de Supabase SQL Editor (vóór merge).
+2. Optioneel `pg_cron` aan voor verjaardags-/vervaldatum-taken; `SENTRY_DSN` voor error monitoring.
+3. Merge → Vercel deployt.
+
+Scripts: `npm run typecheck` · `npm run test:e2e` · `npm run db:types`.
+De in-browser scanner gebruikt nu **jsQR** (werkt ook op iOS Safari).
+
