@@ -1,0 +1,58 @@
+/* De Huyskamer — design tokens, regenerated from _ds_manifest.json.
+   The DS components are inline-styled and only need these custom properties to exist. */
+
+@font-face { font-family: "PT Serif"; src: url("/fonts/PTSerif-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "PT Serif"; src: url("/fonts/PTSerif-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "PT Serif"; src: url("/fonts/PTSerif-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "PT Serif"; src: url("/fonts/PTSerif-BoldItalic.ttf") format("truetype"); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "Diamond Smith"; src: url("/fonts/DiamondSmith.otf") format("opentype"); font-weight: 400; font-style: normal; font-display: swap; }
+
+:root {
+  /* Colors */
+  --dh-brown-900: #2C2A28; --dh-brown-950: #1E1C1B;
+  --dh-ink-900: #22201F; --dh-ink-950: #0F0F0F;
+  --dh-sand-50: #F4ECE4; --dh-sand-100: #EADDD1; --dh-sand-200: #E1D2C4; --dh-sand-300: #D6C5B7; --dh-sand-500: #BBA89A;
+  --dh-red-700: #A30F0F; --dh-red-800: #8A0C0C; --dh-red-600: #C11414;
+  --dh-white: #FFFFFF; --dh-stone-400: #96867B; --dh-stone-500: #85817E;
+  --dh-line: #D9D9D9; --dh-line-dark: rgba(255,255,255,0.10);
+
+  --surface-page: var(--dh-brown-900); --surface-deep: var(--dh-brown-950);
+  --surface-card: var(--dh-sand-100); --surface-card-deep: var(--dh-sand-300); --surface-field: var(--dh-white);
+  --text-on-dark: var(--dh-white); --text-on-dark-muted: var(--dh-stone-400);
+  --text-on-light: var(--dh-ink-900); --text-on-light-muted: var(--dh-stone-500);
+  --brand: var(--dh-red-700); --brand-hover: var(--dh-red-800); --brand-contrast: var(--dh-white);
+  --border-on-light: var(--dh-line); --border-on-dark: var(--dh-line-dark); --focus-ring: var(--dh-red-600);
+
+  /* Type */
+  --font-script: "Diamond Smith", "Brush Script MT", cursive;
+  --font-serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --fs-display: 96px; --fs-h1: 66px; --fs-h2: 48px; --fs-h3: 34px; --fs-h4: 24px; --fs-h5: 18px;
+  --fs-script-lg: 48px; --fs-script-md: 24px;
+  --fs-body-lg: 18px; --fs-body: 16px; --fs-body-sm: 14px; --fs-caption: 12px;
+  --fw-light: 300; --fw-regular: 400; --fw-medium: 500; --fw-bold: 700;
+  --lh-tight: 1.0; --lh-snug: 1.15; --lh-body: 1.5;
+  --ls-tight: -0.01em; --ls-normal: 0; --ls-wide: 0.02em;
+  --type-eyebrow: var(--fw-regular) var(--fs-script-md)/var(--lh-tight) var(--font-script);
+  --type-display: var(--fw-bold) var(--fs-display)/var(--lh-tight) var(--font-serif);
+  --type-h1: var(--fw-bold) var(--fs-h1)/var(--lh-tight) var(--font-serif);
+  --type-h2: var(--fw-bold) var(--fs-h2)/var(--lh-snug) var(--font-serif);
+  --type-h3: var(--fw-bold) var(--fs-h3)/var(--lh-snug) var(--font-serif);
+  --type-h4: var(--fw-bold) var(--fs-h4)/var(--lh-snug) var(--font-serif);
+  --type-body: var(--fw-regular) var(--fs-body)/var(--lh-body) var(--font-sans);
+  --type-body-lg: var(--fw-regular) var(--fs-body-lg)/var(--lh-body) var(--font-sans);
+
+  /* Spacing & radius */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px; --sp-10: 128px;
+  --radius-none: 0px; --radius-sm: 4px; --radius-md: 8px; --radius-lg: 16px; --radius-pill: 1000px; --radius-full: 9999px;
+  --container-max: 1344px; --page-gutter: 48px; --nav-height: 91px;
+
+  /* Effects */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05); --shadow-sm: 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.12); --shadow-lg: 0 18px 48px rgba(0,0,0,0.22);
+  --ring-light: inset 0 0 0 1px rgba(0,0,0,0.10); --ring-dark: inset 0 0 0 1px rgba(255,255,255,0.10);
+  --img-scrim: linear-gradient(rgba(0,0,0,0.20), rgba(0,0,0,0.20)); --grain-blend: color-dodge;
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1); --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms;
+  --transition-base: all var(--dur-base) var(--ease-standard);
+}
