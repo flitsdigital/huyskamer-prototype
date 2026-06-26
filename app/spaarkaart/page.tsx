@@ -44,7 +44,7 @@ export default async function Spaarkaart() {
 
   return (
     <main className="page">
-      <div className="container stack">
+      <div className="container-wide stack">
         <div className="row-between">
           <div>
             <span className="eyebrow">De Huyskamer</span>
@@ -57,61 +57,65 @@ export default async function Spaarkaart() {
           </form>
         </div>
 
-        {/* Saldo + QR */}
-        <div className="card stack" style={{ alignItems: "center", textAlign: "center" }}>
-          <span className="field-label">Jouw saldo</span>
-          <div>
-            <span className="points">{balance}</span> <span className="points-unit">punten</span>
+        <div className="spaar-grid">
+          {/* Saldo + QR */}
+          <div className="card stack" style={{ alignItems: "center", textAlign: "center" }}>
+            <span className="field-label">Jouw saldo</span>
+            <div>
+              <span className="points">{balance}</span> <span className="points-unit">punten</span>
+            </div>
+            <QrCard svg={qrSvg} />
+            <p className="muted-light" style={{ fontSize: "var(--fs-body-sm)" }}>
+              Laat deze code scannen bij de kassa om punten te sparen of in te wisselen.
+            </p>
           </div>
-          <QrCard svg={qrSvg} />
-          <p className="muted-light" style={{ fontSize: "var(--fs-body-sm)" }}>
-            Laat deze code scannen bij de kassa om punten te sparen of in te wisselen.
-          </p>
-        </div>
 
-        {/* Beschikbare beloningen */}
-        {activeRewards.length > 0 && (
-          <div className="card stack-sm">
-            <h2 className="title-on-light">Beloningen</h2>
-            <div className="list">
-              {activeRewards.map((r) => (
-                <div className="list-row" key={r.id}>
-                  <div>
-                    <div className="body-light" style={{ fontWeight: 500 }}>
-                      {r.name}
+          <div className="stack">
+            {/* Beschikbare beloningen */}
+            {activeRewards.length > 0 && (
+              <div className="card stack-sm">
+                <h2 className="title-on-light">Beloningen</h2>
+                <div className="list">
+                  {activeRewards.map((r) => (
+                    <div className="list-row" key={r.id}>
+                      <div>
+                        <div className="body-light" style={{ fontWeight: 500 }}>
+                          {r.name}
+                        </div>
+                        {r.description && <div className="muted-light caption">{r.description}</div>}
+                      </div>
+                      <div className={balance >= r.points_cost ? "delta-pos" : "muted-light"}>
+                        {r.points_cost} pnt
+                      </div>
                     </div>
-                    {r.description && <div className="muted-light caption">{r.description}</div>}
-                  </div>
-                  <div className={balance >= r.points_cost ? "delta-pos" : "muted-light"}>
-                    {r.points_cost} pnt
-                  </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* Historie */}
+            <div className="card stack-sm">
+              <h2 className="title-on-light">Historie</h2>
+              {txns.length === 0 ? (
+                <p className="muted-light">Nog geen transacties. Spaar je eerste punten bij De Huyskamer!</p>
+              ) : (
+                <div className="list">
+                  {txns.map((t) => (
+                    <div className="list-row" key={t.id}>
+                      <div>
+                        <div className="body-light">{txnLabel(t, rewardName(t.reward_id))}</div>
+                        <div className="muted-light caption">{dateTime(t.created_at)}</div>
+                      </div>
+                      <div className={t.points_delta >= 0 ? "delta-pos" : "delta-neg"}>
+                        {t.points_delta >= 0 ? "+" : ""}
+                        {t.points_delta}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        )}
-
-        {/* Historie */}
-        <div className="card stack-sm">
-          <h2 className="title-on-light">Historie</h2>
-          {txns.length === 0 ? (
-            <p className="muted-light">Nog geen transacties. Spaar je eerste punten bij De Huyskamer!</p>
-          ) : (
-            <div className="list">
-              {txns.map((t) => (
-                <div className="list-row" key={t.id}>
-                  <div>
-                    <div className="body-light">{txnLabel(t, rewardName(t.reward_id))}</div>
-                    <div className="muted-light caption">{dateTime(t.created_at)}</div>
-                  </div>
-                  <div className={t.points_delta >= 0 ? "delta-pos" : "delta-neg"}>
-                    {t.points_delta >= 0 ? "+" : ""}
-                    {t.points_delta}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* AVG */}

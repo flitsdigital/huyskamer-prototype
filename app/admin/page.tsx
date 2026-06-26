@@ -33,34 +33,45 @@ export default async function AdminHome() {
 
   return (
     <div className="stack">
-      <div>
-        <span className="eyebrow">Beheer</span>
-        <h1 className="title">Klanten</h1>
+      <div className="row-between wrap">
+        <div>
+          <span className="eyebrow">Beheer</span>
+          <h1 className="title">Klanten</h1>
+        </div>
+        {customers.length > 0 && (
+          <span className="muted">
+            {customers.length} {customers.length === 1 ? "klant" : "klanten"}
+          </span>
+        )}
       </div>
 
-      <div className="card">
-        {customers.length === 0 ? (
+      {customers.length === 0 ? (
+        <div className="card">
           <p className="muted-light">Nog geen klanten geregistreerd.</p>
-        ) : (
-          <div className="list">
-            {customers.map((c) => (
-              <Link href={`/admin/klant/${c.qr_token}`} key={c.id} className="list-row">
+        </div>
+      ) : (
+        <div className="cust-grid">
+          {customers.map((c) => (
+            <Link href={`/admin/klant/${c.qr_token}`} key={c.id} className="card cust-card">
+              <div className="row-between">
                 <div>
                   <div className="body-light" style={{ fontWeight: 500 }}>
                     {c.display_name || c.email || "Onbekend"}
                   </div>
-                  <div className="muted-light caption">
-                    {c.email} · sinds {dateTime(c.created_at)}
-                  </div>
+                  <div className="muted-light caption">{c.email}</div>
                 </div>
                 <div className="title-on-light" style={{ fontSize: "var(--fs-h4)" }}>
-                  {balances.get(c.id) ?? 0} <span className="muted-light caption">pnt</span>
+                  {balances.get(c.id) ?? 0}
+                  <span className="muted-light caption"> pnt</span>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+              </div>
+              <div className="muted-light caption" style={{ marginTop: "var(--sp-3)" }}>
+                Klant sinds {dateTime(c.created_at)}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -13,7 +13,7 @@ Dutch restaurant loyalty app. Next.js 16 App Router + Supabase (Postgres/Auth/RL
 - Server actions live next to their route in `actions.ts`; interactive feedback uses `useActionState` (see `app/admin/klant/[token]/Forms.tsx`).
 - Design system is vendored under `components/ds/` (inline-styled, needs the CSS custom properties from `app/tokens.css`). Interactive DS components are marked `"use client"`.
 - Styling: tokens in `app/tokens.css`, utility classes in `app/globals.css`. Dutch UI copy throughout.
-- Mobile-first: admin nav is a fixed bottom tab bar (`components/AdminTabBar.tsx`, "Scannen" centered/emphasized), headings use `clamp()`, viewport + safe-areas set in `app/layout.tsx`. The vendored DS `Icon` was extended with app glyphs (`users`/`gift`/`scan`/`list`) — keep `Icon.jsx` and `Icon.d.ts` in sync.
+- Responsive: `components/AdminNav.tsx` renders BOTH a fixed bottom tab bar (mobile) and a fixed left sidebar (desktop, `@media min-width:960px` in `globals.css`); CSS toggles which shows. Customer/admin content goes single-column on mobile and multi-column on desktop via the `.cust-grid` / `.detail-grid` / `.reward-grid` / `.spaar-grid` classes. Headings use `clamp()`; viewport + safe-areas in `app/layout.tsx`. The vendored DS `Icon` was extended with app glyphs (`users`/`gift`/`scan`/`list`/`settings`/`log-out`) — keep `Icon.jsx` and `Icon.d.ts` in sync.
 
 ## Schema source of truth
 `supabase/migrations/0001_init.sql`. Apply via the Supabase MCP or SQL editor. Regenerate TS types from the live DB if the schema changes.

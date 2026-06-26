@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import jsQR from "jsqr";
 import { Button } from "@/components/ds/buttons/Button";
 
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
@@ -13,66 +14,79 @@ function extractToken(text: string): string | null {
 
 export default function ScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const rafRef = useRef(0);
   const router = useRouter();
+  const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [supported, setSupported] = useState(true);
   const [manual, setManual] = useState("");
 
-  useEffect(() => {
-    let stream: MediaStream | undefined;
-    let raf = 0;
-    let stopped = false;
+  const stop = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+  }, []);
 
-    // BarcodeDetector is available in Chrome/Android. iOS Safari users use the manual field
-    // or the native camera app (the QR encodes a full URL).
-    const BD = (window as unknown as { BarcodeDetector?: new (o: { formats: string[] }) => { detect: (v: HTMLVideoElement) => Promise<{ rawValue: string }[]> } }).BarcodeDetector;
-    if (!BD) {
-      setSupported(false);
-      return;
-    }
-    const detector = new BD({ formats: ["qr_code"] });
+  // jsQR decodes camera frames on a canvas — works on iOS Safari and Android (needs HTTPS).
+  const start = useCallback(async () => {
+    setError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+        audio: false,
+      });
+      streamRef.current = stream;
+      const v = videoRef.current!;
+      v.srcObject = stream;
+      await v.play();
+      setScanning(true);
 
-    (async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        const v = videoRef.current!;
-        v.srcObject = stream;
-        await v.play();
-        const tick = async () => {
-          if (stopped) return;
-          try {
-            const codes = await detector.detect(v);
-            if (codes.length) {
-              const token = extractToken(codes[0].rawValue);
-              if (token) {
-                stopped = true;
-                router.push(`/admin/klant/${token}`);
-                return;
-              }
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+      const tick = () => {
+        const video = videoRef.current;
+        if (!video || !streamRef.current) return;
+        if (video.readyState >= 2 && video.videoWidth) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(img.data, img.width, img.height, { inversionAttempts: "dontInvert" });
+          if (code) {
+            const token = extractToken(code.data);
+            if (token) {
+              stop();
+              router.push(`/admin/klant/${token}`);
+              return;
             }
-          } catch {
-            /* transient detect error, keep scanning */
           }
-          raf = requestAnimationFrame(tick);
-        };
-        raf = requestAnimationFrame(tick);
-      } catch {
-        setError("Geen toegang tot de camera. Sta cameratoegang toe of gebruik je camera-app.");
-      }
-    })();
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    } catch {
+      setScanning(false);
+      setError(
+        "Geen toegang tot de camera. Sta cameratoegang toe in je browser, of gebruik je camera-app / het codeveld hieronder."
+      );
+    }
+  }, [router, stop]);
 
-    return () => {
-      stopped = true;
-      cancelAnimationFrame(raf);
-      stream?.getTracks().forEach((t) => t.stop());
-    };
-  }, [router]);
+  useEffect(() => {
+    start();
+    return () => stop();
+  }, [start, stop]);
 
   function goManual(e: React.FormEvent) {
     e.preventDefault();
     const t = extractToken(manual);
-    if (t) router.push(`/admin/klant/${t}`);
-    else setError("Geen geldige klantcode gevonden.");
+    if (t) {
+      stop();
+      router.push(`/admin/klant/${t}`);
+    } else {
+      setError("Geen geldige klantcode gevonden.");
+    }
   }
 
   return (
@@ -83,23 +97,35 @@ export default function ScanPage() {
       </div>
 
       <div className="card stack-sm">
-        {supported ? (
-          <>
-            <video
-              ref={videoRef}
-              muted
-              playsInline
-              style={{ width: "100%", borderRadius: "var(--radius-md)", background: "#000", aspectRatio: "1 / 1", objectFit: "cover" }}
-            />
-            <p className="muted-light caption">Richt de camera op de QR-code van de klant.</p>
-          </>
+        <video
+          ref={videoRef}
+          muted
+          playsInline
+          style={{
+            width: "100%",
+            borderRadius: "var(--radius-md)",
+            background: "#000",
+            aspectRatio: "1 / 1",
+            objectFit: "cover",
+            display: scanning ? "block" : "none",
+          }}
+        />
+        <canvas ref={canvasRef} style={{ display: "none" }} />
+        {scanning ? (
+          <p className="muted-light caption">Richt de camera op de QR-code van de klant.</p>
         ) : (
-          <p className="muted-light">
-            Scannen in de browser wordt op dit toestel niet ondersteund. Scan de QR met je gewone
-            camera-app (die opent de klant vanzelf), of plak de code hieronder.
-          </p>
+          <>
+            <p className="muted-light">
+              {error ?? "Start de camera om de QR-code van de klant te scannen."}
+            </p>
+            <Button type="button" onClick={start}>
+              Camera starten
+            </Button>
+          </>
         )}
+      </div>
 
+      <div className="card stack-sm">
         <form className="stack-sm" onSubmit={goManual}>
           <label className="field-label" htmlFor="manual">
             Code handmatig invoeren
@@ -115,8 +141,9 @@ export default function ScanPage() {
             Openen
           </Button>
         </form>
-
-        {error && <p className="error">{error}</p>}
+        <p className="muted-light caption">
+          Tip: je kunt de QR ook met je gewone camera-app scannen — die opent de klant vanzelf.
+        </p>
       </div>
     </div>
   );

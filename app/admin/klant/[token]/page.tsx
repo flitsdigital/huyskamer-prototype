@@ -48,45 +48,51 @@ export default async function KlantDetail({ params }: { params: Promise<{ token:
         {customer.email && <span className="muted-light caption">{customer.email}</span>}
       </div>
 
-      <div className="card stack-sm">
-        <h2 className="title-on-light">Punten bijschrijven</h2>
-        <EarnForm customerId={customer.id} token={token} ratio={ratio} />
-      </div>
-
-      <div className="card stack-sm">
-        <h2 className="title-on-light">Beloning inwisselen</h2>
-        {activeRewards.length === 0 ? (
-          <p className="muted-light">Geen actieve beloningen. Voeg er een toe bij Beloningen.</p>
-        ) : (
-          <RedeemForm customerId={customer.id} token={token} rewards={activeRewards} balance={balance} />
-        )}
-      </div>
-
-      <div className="card stack-sm">
-        <h2 className="title-on-light">Correctie</h2>
-        <AdjustForm customerId={customer.id} token={token} />
-      </div>
-
-      <div className="card stack-sm">
-        <h2 className="title-on-light">Recente historie</h2>
-        {txns.length === 0 ? (
-          <p className="muted-light">Nog geen transacties.</p>
-        ) : (
-          <div className="list">
-            {txns.map((t) => (
-              <div className="list-row" key={t.id}>
-                <div>
-                  <div className="body-light">{txnLabel(t, rewardName(t.reward_id))}</div>
-                  <div className="muted-light caption">{dateTime(t.created_at)}</div>
-                </div>
-                <div className={t.points_delta >= 0 ? "delta-pos" : "delta-neg"}>
-                  {t.points_delta >= 0 ? "+" : ""}
-                  {t.points_delta}
-                </div>
-              </div>
-            ))}
+      <div className="detail-grid">
+        <div className="stack">
+          <div className="card stack-sm">
+            <h2 className="title-on-light">Punten bijschrijven</h2>
+            <EarnForm customerId={customer.id} token={token} ratio={ratio} />
           </div>
-        )}
+
+          <div className="card stack-sm">
+            <h2 className="title-on-light">Beloning inwisselen</h2>
+            {activeRewards.length === 0 ? (
+              <p className="muted-light">Geen actieve beloningen. Voeg er een toe bij Beloningen.</p>
+            ) : (
+              <RedeemForm customerId={customer.id} token={token} rewards={activeRewards} balance={balance} />
+            )}
+          </div>
+
+          <div className="card stack-sm">
+            <h2 className="title-on-light">Correctie</h2>
+            <AdjustForm customerId={customer.id} token={token} />
+          </div>
+        </div>
+
+        <div className="stack">
+          <div className="card stack-sm">
+            <h2 className="title-on-light">Recente historie</h2>
+            {txns.length === 0 ? (
+              <p className="muted-light">Nog geen transacties.</p>
+            ) : (
+              <div className="list">
+                {txns.map((t) => (
+                  <div className="list-row" key={t.id}>
+                    <div>
+                      <div className="body-light">{txnLabel(t, rewardName(t.reward_id))}</div>
+                      <div className="muted-light caption">{dateTime(t.created_at)}</div>
+                    </div>
+                    <div className={t.points_delta >= 0 ? "delta-pos" : "delta-neg"}>
+                      {t.points_delta >= 0 ? "+" : ""}
+                      {t.points_delta}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

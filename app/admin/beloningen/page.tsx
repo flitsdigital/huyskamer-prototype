@@ -40,7 +40,7 @@ export default async function BeloningenPage() {
       </div>
 
       {/* Bestaande beloningen */}
-      <div className="stack-sm">
+      <div className="reward-grid">
         {rewards.length === 0 && <div className="card muted-light">Nog geen beloningen.</div>}
         {rewards.map((r) => (
           <div className="card stack-sm" key={r.id}>

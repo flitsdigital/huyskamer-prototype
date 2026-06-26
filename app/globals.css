@@ -15,17 +15,16 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
-/* Layout (with iPhone safe-area gutters) */
+/* ---------- Layout (mobile-first, with iPhone safe-area gutters) ---------- */
 .page {
   min-height: 100dvh;
   padding: calc(var(--sp-5) + env(safe-area-inset-top)) var(--sp-4) var(--sp-9);
   padding-left: max(var(--sp-4), env(safe-area-inset-left));
   padding-right: max(var(--sp-4), env(safe-area-inset-right));
 }
-/* Admin pages leave room for the fixed bottom tab bar. */
-.has-tabbar { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
 .container { width: 100%; max-width: 760px; margin: 0 auto; }
 .container-narrow { max-width: 460px; }
+.container-wide { width: 100%; max-width: 1040px; margin: 0 auto; }
 .stack { display: flex; flex-direction: column; gap: var(--sp-5); }
 .stack-sm { display: flex; flex-direction: column; gap: var(--sp-3); }
 .row { display: flex; align-items: center; gap: var(--sp-3); }
@@ -33,7 +32,16 @@ button { font-family: inherit; }
 .wrap { flex-wrap: wrap; }
 .grow { flex: 1; }
 
-/* Type — responsive so desktop-scale headings don't overflow small phones */
+/* Admin shell: bottom tab bar on mobile, fixed sidebar on desktop */
+.admin {
+  min-height: 100dvh;
+  padding: calc(var(--sp-5) + env(safe-area-inset-top)) var(--sp-4) calc(80px + env(safe-area-inset-bottom));
+  padding-left: max(var(--sp-4), env(safe-area-inset-left));
+  padding-right: max(var(--sp-4), env(safe-area-inset-right));
+}
+.admin-inner { width: 100%; max-width: 760px; margin: 0 auto; }
+
+/* ---------- Type (responsive) ---------- */
 .eyebrow { font: var(--type-eyebrow); color: var(--brand); }
 .eyebrow-light { font: var(--type-eyebrow); color: var(--text-on-dark-muted); }
 .title {
@@ -53,7 +61,7 @@ button { font-family: inherit; }
 .body-light { color: var(--text-on-light); }
 .caption { font-size: var(--fs-caption); color: var(--text-on-dark-muted); }
 
-/* Surfaces */
+/* ---------- Surfaces ---------- */
 .card {
   background: var(--surface-card);
   color: var(--text-on-light);
@@ -73,7 +81,7 @@ button { font-family: inherit; }
 .points { font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: clamp(56px, 18vw, 80px); line-height: 1; color: var(--brand); }
 .points-unit { font: var(--type-h4); color: var(--text-on-light-muted); }
 
-/* Plain form controls (selects, number inputs) styled like the DS field */
+/* ---------- Form controls ---------- */
 .field-label { font: var(--fw-regular) 22px/1 var(--font-script); color: var(--text-on-light); }
 .control {
   width: 100%;
@@ -88,7 +96,7 @@ button { font-family: inherit; }
 }
 .control:focus { border-color: var(--focus-ring); box-shadow: 0 0 0 3px rgba(193,20,20,0.15); }
 
-/* Dividers & lists */
+/* ---------- Dividers & lists ---------- */
 .divider { height: 1px; background: var(--border-on-light); border: 0; }
 .list { display: flex; flex-direction: column; }
 .list-row {
@@ -97,16 +105,22 @@ button { font-family: inherit; }
 }
 .list-row:last-child { border-bottom: 0; }
 
-/* Delta badges */
 .delta-pos { color: #2f7d32; font-weight: var(--fw-bold); }
 .delta-neg { color: var(--brand); font-weight: var(--fw-bold); }
 
-/* Admin top bar (compact wordmark) */
+/* ---------- Content grids (1 col mobile -> multi-col desktop) ---------- */
+.cust-grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-3); }
+.cust-card { display: block; transition: box-shadow var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard); }
+.reward-grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-3); }
+.detail-grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-5); align-items: start; }
+.spaar-grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-5); align-items: start; }
+
+/* ---------- Admin top bar (mobile wordmark) ---------- */
 .appbar { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-2) 0 var(--sp-4); }
 .appbar-brand { font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-h4); color: var(--text-on-dark); }
 .appbar-brand .scr { font-family: var(--font-script); color: var(--brand); font-size: 20px; margin-right: 2px; }
 
-/* Bottom tab bar (mobile-first) */
+/* ---------- Mobile bottom tab bar ---------- */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
   display: flex; align-items: stretch; justify-content: space-around;
@@ -125,7 +139,6 @@ button { font-family: inherit; }
 .tab.active { color: var(--text-on-dark); }
 .tab.active .tab-ico { color: var(--brand); }
 .tab-ico { color: var(--text-on-dark-muted); }
-/* Center "Scannen" tab — lifted brand circle */
 .tab-scan { color: var(--text-on-dark); }
 .tab-ico-wrap {
   width: 56px; height: 56px; margin-top: -24px; margin-bottom: 1px;
@@ -135,7 +148,21 @@ button { font-family: inherit; }
 }
 .tab-scan:active .tab-ico-wrap { background: var(--brand-hover); }
 
-/* Quick-action chips (snelbedrag) */
+/* ---------- Desktop sidebar (hidden on mobile) ---------- */
+.sidebar { display: none; }
+.sidebar-brand { font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-h4); color: var(--text-on-dark); padding: var(--sp-2) var(--sp-3) var(--sp-6); }
+.sidebar-brand .scr { font-family: var(--font-script); color: var(--brand); font-size: 24px; margin-right: 3px; }
+.side-link {
+  display: flex; align-items: center; gap: var(--sp-3); padding: 12px 14px; border-radius: var(--radius-md);
+  color: var(--text-on-dark-muted); font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-body);
+  transition: var(--transition-base);
+}
+.side-link:hover { background: rgba(255,255,255,0.06); color: var(--text-on-dark); }
+.side-link.active { background: var(--brand); color: var(--brand-contrast); }
+.side-ico { color: currentColor; display: flex; }
+.side-spacer { flex: 1; }
+
+/* ---------- Quick-action chips ---------- */
 .chips { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
 .chip {
   padding: 10px 16px; min-height: 44px; border-radius: var(--radius-pill);
@@ -146,7 +173,7 @@ button { font-family: inherit; }
 .chip:active { transform: scale(0.96); }
 .chip.selected { background: var(--brand); color: var(--brand-contrast); }
 
-/* Tappable reward cards (redeem) */
+/* ---------- Tappable reward cards ---------- */
 .reward-card {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
   width: 100%; text-align: left; padding: var(--sp-4); min-height: 60px;
@@ -158,13 +185,13 @@ button { font-family: inherit; }
 .reward-card:disabled { opacity: 0.5; cursor: not-allowed; }
 .reward-card .rc-cost { font-family: var(--font-serif); font-weight: var(--fw-bold); white-space: nowrap; }
 
-/* Tables (logboek) */
+/* ---------- Tables (logboek) ---------- */
 .table { width: 100%; border-collapse: collapse; font-size: var(--fs-body-sm); }
 .table th, .table td { text-align: left; padding: var(--sp-3); border-bottom: 1px solid var(--border-on-light); vertical-align: top; }
 .table th { font-family: var(--font-serif); color: var(--text-on-light-muted); font-weight: var(--fw-bold); }
 .table td { color: var(--text-on-light); }
 
-/* QR — tappable card + fullscreen overlay */
+/* ---------- QR ---------- */
 .qr { background: #fff; padding: var(--sp-4); border-radius: var(--radius-md); width: fit-content; box-shadow: var(--shadow-sm); }
 .qr svg { display: block; width: 220px; height: 220px; }
 .qr-tap { border: 0; cursor: pointer; }
@@ -176,7 +203,7 @@ button { font-family: inherit; }
 .qr-overlay svg { display: block; width: min(82vw, 380px); height: min(82vw, 380px); }
 .qr-overlay .qr-hint { color: var(--text-on-light-muted); font-size: var(--fs-body-sm); }
 
-/* Misc */
+/* ---------- Misc ---------- */
 .error { color: var(--brand); font-size: var(--fs-body-sm); }
 .success { color: #2f7d32; font-size: var(--fs-body-sm); }
 .checkbox-row { display: flex; align-items: flex-start; gap: var(--sp-2); color: var(--text-on-light); font-size: var(--fs-body-sm); }
@@ -184,3 +211,28 @@ button { font-family: inherit; }
 .tag { display: inline-block; padding: 2px 10px; border-radius: var(--radius-pill); font-size: var(--fs-caption); font-weight: var(--fw-bold); }
 .tag-on { background: rgba(47,125,50,0.15); color: #2f7d32; }
 .tag-off { background: rgba(133,129,126,0.18); color: var(--text-on-light-muted); }
+
+/* ======================= DESKTOP (advanced layout) ======================= */
+@media (min-width: 960px) {
+  /* Admin: swap bottom bar for a fixed sidebar, widen the content area */
+  .tabbar, .appbar { display: none; }
+  .sidebar {
+    display: flex; flex-direction: column; gap: var(--sp-1);
+    position: fixed; left: 0; top: 0; bottom: 0; width: 248px; z-index: 50;
+    background: var(--surface-deep); border-right: 1px solid var(--border-on-dark);
+    padding: var(--sp-6) var(--sp-4);
+  }
+  .admin { padding: var(--sp-8) var(--sp-7) var(--sp-8) calc(248px + var(--sp-8)); }
+  .admin-inner { max-width: 1180px; }
+
+  /* Richer spacing on larger screens */
+  .card { padding: var(--sp-6); }
+  .page { padding-top: var(--sp-8); padding-bottom: var(--sp-9); }
+
+  /* Multi-column content */
+  .cust-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--sp-4); }
+  .cust-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+  .reward-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--sp-4); }
+  .detail-grid { grid-template-columns: 1.05fr 0.95fr; gap: var(--sp-6); }
+  .spaar-grid { grid-template-columns: 380px 1fr; gap: var(--sp-6); }
+}

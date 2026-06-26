@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/lib/auth";
-import { AdminTabBar } from "@/components/AdminTabBar";
+import { AdminNav } from "@/components/AdminNav";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +10,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (profile.role !== "admin") redirect("/spaarkaart");
 
   return (
-    <main className="page has-tabbar">
-      <div className="container">
+    <div className="admin">
+      <AdminNav />
+      <div className="admin-inner">
         <header className="appbar">
           <span className="appbar-brand">
             <span className="scr">De</span> Huyskamer
@@ -20,7 +21,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </header>
         {children}
       </div>
-      <AdminTabBar />
-    </main>
+    </div>
   );
 }
