@@ -15,8 +15,6 @@ export function ConfirmButton({
   variant = "primary",
   confirmVariant = "primary",
   size,
-  fullWidth,
-  onDark,
   hidden,
 }: {
   action: (formData: FormData) => void | Promise<void>;
@@ -28,14 +26,12 @@ export function ConfirmButton({
   variant?: Variant;
   confirmVariant?: Variant;
   size?: "sm" | "md";
-  fullWidth?: boolean;
-  onDark?: boolean;
   hidden?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button type="button" variant={variant} size={size} fullWidth={fullWidth} onDark={onDark} onClick={() => setOpen(true)}>
+      <Button type="button" variant={variant} size={size} onClick={() => setOpen(true)}>
         {children}
       </Button>
       {open && (

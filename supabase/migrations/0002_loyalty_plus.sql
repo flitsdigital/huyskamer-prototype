@@ -50,16 +50,15 @@ insert into public.tiers (name, min_points, earn_multiplier, sort)
   ) as v(name, min_points, earn_multiplier, sort)
   where not exists (select 1 from public.tiers);
 
--- lifetime earned points (positive earn deltas only)
-create or replace view public.customer_lifetime with (security_invoker = on) as
-  select p.id as customer_id,
-         coalesce(sum(t.points_delta) filter (where t.type = 'earn'), 0)::int as total_earned
-  from public.profiles p
-  left join public.point_transactions t on t.customer_id = p.id
-  group by p.id;
-
--- current + next tier per customer
+-- current + next tier per customer (lifetime earned = positive earn deltas)
 create or replace view public.customer_tiers with (security_invoker = on) as
+  with cl as (
+    select p.id as customer_id,
+           coalesce(sum(t.points_delta) filter (where t.type = 'earn'), 0)::int as total_earned
+    from public.profiles p
+    left join public.point_transactions t on t.customer_id = p.id
+    group by p.id
+  )
   select cl.customer_id,
          cl.total_earned,
          tr.id   as tier_id,
@@ -67,14 +66,14 @@ create or replace view public.customer_tiers with (security_invoker = on) as
          tr.earn_multiplier,
          (select min(min_points) from public.tiers t2 where t2.min_points > cl.total_earned) as next_tier_min,
          (select name from public.tiers t3 where t3.min_points > cl.total_earned order by t3.min_points limit 1) as next_tier_name
-  from public.customer_lifetime cl
+  from cl
   left join lateral (
     select * from public.tiers t
     where t.min_points <= cl.total_earned
     order by t.min_points desc limit 1
   ) tr on true;
 
-grant select on public.tiers, public.customer_lifetime, public.customer_tiers to authenticated;
+grant select on public.tiers, public.customer_tiers to authenticated;
 
 -- ============ earn_points: apply the customer's tier multiplier ============
 create or replace function public.earn_points(p_customer uuid, p_amount numeric, p_note text default null)

@@ -3,25 +3,13 @@
 import { Button } from "@/components/ds/buttons/Button";
 import { useToast } from "@/components/Toast";
 
-export function CopyButton({
-  value,
-  label,
-  copiedLabel = "Gekopieerd!",
-  variant = "ghost",
-  size = "sm",
-}: {
-  value: string;
-  label: string;
-  copiedLabel?: string;
-  variant?: "primary" | "secondary" | "ghost";
-  size?: "sm" | "md";
-}) {
+export function CopyButton({ value, label, copiedLabel = "Gekopieerd!" }: { value: string; label: string; copiedLabel?: string }) {
   const toast = useToast();
   return (
     <Button
       type="button"
-      variant={variant}
-      size={size}
+      variant="ghost"
+      size="sm"
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(value);

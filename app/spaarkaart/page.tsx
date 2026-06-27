@@ -59,12 +59,6 @@ export default async function Spaarkaart() {
   const tierPct =
     tier && tier.next_tier_min ? Math.min(100, Math.round((tier.total_earned / tier.next_tier_min) * 100)) : 100;
 
-  const year = new Date().getFullYear();
-  const earnedThisYear = txns
-    .filter((x) => x.type === "earn" && new Date(x.created_at).getFullYear() === year)
-    .reduce((s, x) => s + x.points_delta, 0);
-  const redeemedCount = txns.filter((x) => x.type === "redeem").length;
-
   const referralUrl = `${siteUrl}/login?ref=${profile.referral_code ?? ""}`;
   const groups = groupByMonth(txns, locale);
 

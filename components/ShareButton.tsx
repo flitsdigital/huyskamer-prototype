@@ -9,14 +9,12 @@ export function ShareButton({
   title,
   label,
   variant = "secondary",
-  fullWidth,
 }: {
   url: string;
   text?: string;
   title?: string;
   label: string;
   variant?: "primary" | "secondary" | "ghost";
-  fullWidth?: boolean;
 }) {
   const toast = useToast();
   async function share() {
@@ -37,7 +35,7 @@ export function ShareButton({
     }
   }
   return (
-    <Button type="button" variant={variant} fullWidth={fullWidth} onClick={share}>
+    <Button type="button" variant={variant} onClick={share}>
       {label}
     </Button>
   );
