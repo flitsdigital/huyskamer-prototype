@@ -110,9 +110,15 @@ export function RedeemForm({
               className={`reward-card ${selected === r.id ? "selected" : ""}`}
               onClick={() => setSelected(r.id)}
             >
-              <span>
-                <span style={{ fontWeight: 500 }}>{r.name}</span>
-                {!afford && <span className="muted-light caption"> · te weinig punten</span>}
+              <span className="row" style={{ gap: "var(--sp-3)" }}>
+                {r.image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={r.image_url} alt="" loading="lazy" style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                )}
+                <span>
+                  <span style={{ fontWeight: 500 }}>{r.name}</span>
+                  {!afford && <span className="muted-light caption"> · te weinig punten</span>}
+                </span>
               </span>
               <span className="rc-cost">{r.points_cost} pnt</span>
             </button>

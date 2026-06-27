@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { dateTime } from "@/lib/format";
+import { getUserProfile } from "@/lib/auth";
+import { CustomerBrowser } from "./CustomerBrowser";
+import { QuickCreate } from "./QuickCreate";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +14,11 @@ type CustomerRow = {
 };
 
 export default async function AdminHome() {
+  const profile = await getUserProfile();
+  const isOwner = !!profile?.is_owner;
   const supabase = await createClient();
-  const [customerRes, balanceRes] = await Promise.all([
+
+  const [custRes, balRes] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, display_name, email, qr_token, created_at")
@@ -23,13 +27,21 @@ export default async function AdminHome() {
     supabase.from("customer_balances").select("customer_id, balance"),
   ]);
 
-  const customers = (customerRes.data ?? []) as CustomerRow[];
-  const balances = new Map(
-    (balanceRes.data ?? []).map((b: { customer_id: string; balance: number }) => [
-      b.customer_id,
-      b.balance,
-    ])
+  const customers = (custRes.data ?? []) as CustomerRow[];
+  const balMap = new Map(
+    (balRes.data ?? []).map((b: { customer_id: string; balance: number }) => [b.customer_id, b.balance])
   );
+  const withBal = customers.map((c) => ({ ...c, balance: balMap.get(c.id) ?? 0 }));
+
+  let kpis: { customers: number; totalBalance: number; transactions: number; redeemed: number } | null = null;
+  if (isOwner) {
+    const totalBalance = withBal.reduce((s, c) => s + c.balance, 0);
+    const [{ count: txCount }, { count: redeemedCount }] = await Promise.all([
+      supabase.from("point_transactions").select("*", { count: "exact", head: true }),
+      supabase.from("point_transactions").select("*", { count: "exact", head: true }).eq("type", "redeem"),
+    ]);
+    kpis = { customers: customers.length, totalBalance, transactions: txCount ?? 0, redeemed: redeemedCount ?? 0 };
+  }
 
   return (
     <div className="stack">
@@ -38,40 +50,34 @@ export default async function AdminHome() {
           <span className="eyebrow">Beheer</span>
           <h1 className="title">Klanten</h1>
         </div>
-        {customers.length > 0 && (
-          <span className="muted">
-            {customers.length} {customers.length === 1 ? "klant" : "klanten"}
-          </span>
-        )}
+        <span className={`role-badge ${isOwner ? "role-owner" : "role-staff"}`}>
+          {isOwner ? "Eigenaar" : "Medewerker"}
+        </span>
       </div>
 
-      {customers.length === 0 ? (
-        <div className="card">
-          <p className="muted-light">Nog geen klanten geregistreerd.</p>
-        </div>
-      ) : (
-        <div className="cust-grid">
-          {customers.map((c) => (
-            <Link href={`/admin/klant/${c.qr_token}`} key={c.id} className="card cust-card">
-              <div className="row-between">
-                <div>
-                  <div className="body-light" style={{ fontWeight: 500 }}>
-                    {c.display_name || c.email || "Onbekend"}
-                  </div>
-                  <div className="muted-light caption">{c.email}</div>
-                </div>
-                <div className="title-on-light" style={{ fontSize: "var(--fs-h4)" }}>
-                  {balances.get(c.id) ?? 0}
-                  <span className="muted-light caption"> pnt</span>
-                </div>
-              </div>
-              <div className="muted-light caption" style={{ marginTop: "var(--sp-3)" }}>
-                Klant sinds {dateTime(c.created_at)}
-              </div>
-            </Link>
-          ))}
+      {kpis && (
+        <div className="kpi-grid">
+          <div className="kpi">
+            <div className="k-val">{kpis.customers}</div>
+            <div className="k-lab">Klanten</div>
+          </div>
+          <div className="kpi">
+            <div className="k-val">{kpis.totalBalance}</div>
+            <div className="k-lab">Punten in omloop</div>
+          </div>
+          <div className="kpi">
+            <div className="k-val">{kpis.transactions}</div>
+            <div className="k-lab">Transacties</div>
+          </div>
+          <div className="kpi">
+            <div className="k-val">{kpis.redeemed}</div>
+            <div className="k-lab">Inwisselingen</div>
+          </div>
         </div>
       )}
+
+      <QuickCreate />
+      <CustomerBrowser customers={withBal} />
     </div>
   );
 }

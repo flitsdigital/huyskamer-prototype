@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { dateTime, txnLabel } from "@/lib/format";
 import { EarnForm, RedeemForm, AdjustForm } from "./Forms";
+import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import type { Profile, Reward, Transaction } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,7 @@ export default async function KlantDetail({ params }: { params: Promise<{ token:
 
   return (
     <div className="stack">
+      <RealtimeRefresh customerId={customer.id} />
       <div className="card stack-sm" style={{ textAlign: "center", alignItems: "center" }}>
         <span className="field-label">{customer.display_name || customer.email}</span>
         <div>
