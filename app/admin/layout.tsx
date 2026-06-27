@@ -1,13 +1,10 @@
-import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
 import { AdminNav } from "@/components/AdminNav";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const profile = await getUserProfile();
-  if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/spaarkaart");
+  const profile = await requireStaff();
 
   return (
     <div className="admin">

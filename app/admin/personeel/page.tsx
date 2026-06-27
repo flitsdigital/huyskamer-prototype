@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/auth";
+import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ds/buttons/Button";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -10,11 +9,7 @@ export const dynamic = "force-dynamic";
 type Staff = { id: string; display_name: string | null; email: string | null; is_owner: boolean };
 
 export default async function Personeel() {
-  const profile = await getUserProfile();
-  if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/spaarkaart");
-  if (!profile.is_owner) redirect("/admin");
-
+  const profile = await requireOwner();
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")

@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/auth";
+import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { dateTime, euro } from "@/lib/format";
 import { PrintButton } from "@/components/PrintButton";
@@ -29,11 +28,7 @@ function who(p: { display_name: string | null; email: string | null } | null) {
 }
 
 export default async function LogboekPage() {
-  const profile = await getUserProfile();
-  if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/spaarkaart");
-  if (!profile.is_owner) redirect("/admin");
-
+  await requireOwner();
   const supabase = await createClient();
   const { data } = await supabase
     .from("point_transactions")
@@ -58,44 +53,40 @@ export default async function LogboekPage() {
         <PrintButton label="Printen" />
       </div>
 
-      <div className="card" style={{ overflowX: "auto" }}>
+      <div className="card">
         {rows.length === 0 ? (
           <p className="muted-light">Nog geen transacties.</p>
         ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Wanneer</th>
-                <th>Klant</th>
-                <th>Type</th>
-                <th>Details</th>
-                <th style={{ textAlign: "right" }}>Punten</th>
-                <th>Door</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((t) => (
-                <tr key={t.id}>
-                  <td className="muted-light">{dateTime(t.created_at)}</td>
-                  <td>{who(t.customer)}</td>
-                  <td>{TYPE_LABEL[t.type]}</td>
-                  <td className="muted-light">
-                    {t.type === "earn" && t.amount_spent != null ? euro(t.amount_spent) : ""}
-                    {t.type === "redeem" && t.reward?.name ? t.reward.name : ""}
-                    {t.type === "adjust" && t.note ? t.note : ""}
-                  </td>
-                  <td
-                    style={{ textAlign: "right" }}
-                    className={t.points_delta >= 0 ? "delta-pos" : "delta-neg"}
-                  >
+          <ul className="log-list">
+            {rows.map((t) => {
+              const details =
+                t.type === "earn" && t.amount_spent != null
+                  ? euro(t.amount_spent)
+                  : t.type === "redeem" && t.reward?.name
+                    ? t.reward.name
+                    : t.type === "adjust" && t.note
+                      ? t.note
+                      : null;
+              return (
+                <li key={t.id} className="log-row">
+                  <div className="grow">
+                    <div className="log-who">{who(t.customer)}</div>
+                    <div className="log-meta">
+                      {TYPE_LABEL[t.type]}
+                      {details ? ` · ${details}` : ""}
+                    </div>
+                    <div className="log-sub">
+                      {dateTime(t.created_at)} · door {who(t.admin)}
+                    </div>
+                  </div>
+                  <div className={`log-delta ${t.points_delta >= 0 ? "delta-pos" : "delta-neg"}`}>
                     {t.points_delta >= 0 ? "+" : ""}
                     {t.points_delta}
-                  </td>
-                  <td className="muted-light">{who(t.admin)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
     </div>

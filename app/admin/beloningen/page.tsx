@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/auth";
+import { requireOwner } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ds/buttons/Button";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -9,11 +8,7 @@ import type { Reward } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function BeloningenPage() {
-  const profile = await getUserProfile();
-  if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/spaarkaart");
-  if (!profile.is_owner) redirect("/admin");
-
+  await requireOwner();
   const supabase = await createClient();
   const { data } = await supabase.from("rewards").select("*").order("points_cost");
   const rewards = (data ?? []) as Reward[];

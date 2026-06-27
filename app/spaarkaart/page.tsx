@@ -1,8 +1,7 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/server";
-import { getUserProfile } from "@/lib/auth";
+import { requireCustomer } from "@/lib/auth";
 import { Button } from "@/components/ds/buttons/Button";
 import { Icon } from "@/components/ds/icons/Icon";
 import { DeleteAccount } from "./DeleteAccount";
@@ -21,9 +20,7 @@ import type { Reward, Transaction, CustomerTier } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function Spaarkaart() {
-  const profile = await getUserProfile();
-  if (!profile) redirect("/login");
-  if (profile.role === "admin") redirect("/admin");
+  const profile = await requireCustomer();
   const locale = normalizeLocale(profile.locale);
 
   const supabase = await createClient();

@@ -13,14 +13,10 @@ type Entry = { nl: string; en: string; de: string };
 // Customer-facing strings + shared UI. Admin/staff UI stays Dutch (staff are NL-speaking).
 const dict = {
   "common.points": { nl: "punten", en: "points", de: "Punkte" },
-  "common.point": { nl: "punt", en: "point", de: "Punkt" },
   "common.save": { nl: "Opslaan", en: "Save", de: "Speichern" },
   "common.saved": { nl: "Opgeslagen", en: "Saved", de: "Gespeichert" },
   "common.cancel": { nl: "Annuleren", en: "Cancel", de: "Abbrechen" },
-  "common.open": { nl: "Openen", en: "Open", de: "Öffnen" },
   "common.back": { nl: "Terug", en: "Back", de: "Zurück" },
-  "common.loading": { nl: "Laden…", en: "Loading…", de: "Laden…" },
-  "common.retry": { nl: "Opnieuw", en: "Retry", de: "Erneut" },
 
   "auth.welcome": { nl: "Welkom bij", en: "Welcome to", de: "Willkommen bei" },
   "auth.tagline": {

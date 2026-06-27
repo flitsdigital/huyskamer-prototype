@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getUserProfile } from "@/lib/auth";
+import { requireCustomer } from "@/lib/auth";
 import { Button } from "@/components/ds/buttons/Button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CopyButton } from "@/components/CopyButton";
@@ -14,9 +13,7 @@ import type { Transaction, CustomerTier } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export default async function ProfielPage() {
-  const profile = await getUserProfile();
-  if (!profile) redirect("/login");
-  if (profile.role === "admin") redirect("/admin");
+  const profile = await requireCustomer();
   const locale = normalizeLocale(profile.locale);
 
   const supabase = await createClient();

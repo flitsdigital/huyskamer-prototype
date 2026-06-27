@@ -69,13 +69,6 @@ button { font-family: inherit; }
   box-shadow: var(--shadow-md);
   padding: var(--sp-5);
 }
-.card-deep { background: var(--surface-card-deep); }
-.panel {
-  background: var(--surface-deep);
-  border: 1px solid var(--border-on-dark);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-5);
-}
 
 /* Big saldo number */
 .points { font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: clamp(56px, 18vw, 80px); line-height: 1; color: var(--brand); }
@@ -185,11 +178,18 @@ button { font-family: inherit; }
 .reward-card:disabled { opacity: 0.5; cursor: not-allowed; }
 .reward-card .rc-cost { font-family: var(--font-serif); font-weight: var(--fw-bold); white-space: nowrap; }
 
-/* ---------- Tables (logboek) ---------- */
-.table { width: 100%; border-collapse: collapse; font-size: var(--fs-body-sm); }
-.table th, .table td { text-align: left; padding: var(--sp-3); border-bottom: 1px solid var(--border-on-light); vertical-align: top; }
-.table th { font-family: var(--font-serif); color: var(--text-on-light-muted); font-weight: var(--fw-bold); }
-.table td { color: var(--text-on-light); }
+/* ---------- Logboek (mobile-friendly row list) ---------- */
+.log-list { display: flex; flex-direction: column; }
+.log-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-4);
+  padding: var(--sp-4) 0; border-bottom: 1px solid var(--border-on-light);
+}
+.log-row:first-child { padding-top: 0; }
+.log-row:last-child { padding-bottom: 0; border-bottom: 0; }
+.log-who { font-weight: var(--fw-medium); color: var(--text-on-light); }
+.log-meta { color: var(--text-on-light); font-size: var(--fs-body-sm); margin-top: 2px; }
+.log-sub { color: var(--text-on-light-muted); font-size: var(--fs-caption); margin-top: 4px; }
+.log-delta { font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-h4); line-height: 1; white-space: nowrap; }
 
 /* ---------- QR ---------- */
 .qr { background: #fff; padding: var(--sp-4); border-radius: var(--radius-md); width: fit-content; box-shadow: var(--shadow-sm); }
@@ -239,7 +239,6 @@ button { font-family: inherit; }
 
 /* ======================= Foundation extras ======================= */
 /* Accessibility */
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .skip-link { position: absolute; left: -999px; top: 0; z-index: 200; background: var(--brand); color: #fff; padding: 10px 16px; border-radius: 0 0 8px 0; }
 .skip-link:focus { left: 0; }
 
@@ -279,7 +278,6 @@ button { font-family: inherit; }
 /* Progress bars (tier / next reward) */
 .progress { height: 10px; border-radius: var(--radius-pill); background: rgba(0,0,0,0.10); overflow: hidden; }
 .progress > span { display: block; height: 100%; background: var(--brand); border-radius: var(--radius-pill); transition: width var(--dur-slow) var(--ease-out); }
-.progress-on-dark { background: rgba(255,255,255,0.12); }
 
 /* Tier badge */
 .tier-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: var(--radius-pill); font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-body-sm); }
@@ -292,7 +290,6 @@ button { font-family: inherit; }
 .hero::before { content: ""; position: absolute; inset: 0; background-size: cover; background-position: center; z-index: -2; }
 .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(30,28,27,0.55), rgba(30,28,27,0.78)); z-index: -1; }
 .hero-storefront::before { background-image: url('/img/storefront.png'); }
-.hero-interior::before { background-image: url('/img/cafe-interior.png'); }
 
 /* Share / referral */
 .referral-code { font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-h3); letter-spacing: 0.08em; color: var(--brand); }
@@ -300,8 +297,6 @@ button { font-family: inherit; }
 /* Micro-animations */
 @keyframes points-pop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
 .points-pop { animation: points-pop var(--dur-slow) var(--ease-standard); display: inline-block; }
-@keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.animate-in { animation: card-in var(--dur-base) var(--ease-out) both; }
 
 /* History month groups */
 .month-head { display: flex; justify-content: space-between; align-items: baseline; padding: var(--sp-4) 0 var(--sp-2); }
@@ -339,6 +334,5 @@ button { font-family: inherit; }
   .admin { padding: 0 !important; }
   .card { box-shadow: none; border: 1px solid #ddd; }
   .title, .title-on-light, .eyebrow { color: #000 !important; }
-  .table th, .table td { border-color: #ccc; }
 }
 

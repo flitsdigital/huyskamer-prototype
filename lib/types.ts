@@ -52,14 +52,6 @@ export interface Settings {
   updated_at: string;
 }
 
-export interface Tier {
-  id: number;
-  name: string;
-  min_points: number;
-  earn_multiplier: number;
-  sort: number;
-}
-
 export interface CustomerTier {
   customer_id: string;
   total_earned: number;

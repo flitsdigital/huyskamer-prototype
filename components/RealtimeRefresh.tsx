@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 // Live-refreshes the page when point_transactions change (Supabase Realtime).
 // Requires the table to be in the supabase_realtime publication (see migration 0002).
-export function RealtimeRefresh({ customerId }: { customerId?: string }) {
+export function RealtimeRefresh({ customerId }: { customerId: string }) {
   const router = useRouter();
   useEffect(() => {
     const supabase = createClient();
@@ -18,7 +18,7 @@ export function RealtimeRefresh({ customerId }: { customerId?: string }) {
           event: "*",
           schema: "public",
           table: "point_transactions",
-          ...(customerId ? { filter: `customer_id=eq.${customerId}` } : {}),
+          filter: `customer_id=eq.${customerId}`,
         },
         () => router.refresh()
       )

@@ -29,7 +29,7 @@ export function QuickCreate() {
   if (!open) {
     return (
       <div>
-        <Button type="button" variant="secondary" onClick={() => setOpen(true)}>
+        <Button type="button" variant="secondary" onDark onClick={() => setOpen(true)}>
           + Nieuwe klant
         </Button>
       </div>
